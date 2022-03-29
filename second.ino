@@ -60,15 +60,14 @@ float dt;
 float milliOld_mpu;
 float milliNew_mpu;
 float dt_mpu;
-int error = 0; // ?? Why there are so many global variables here while we can use them in functions only 
+int error = 0; 
 float previousError = 0;
 float ErrorChange;
 float Slope;
 float Area = 0;
 int pid;
-int counter = 0;// ?? What is the usage of this counter
-//char arr[5] = {'f', 'f', 'r', 'r', 'r'}; // ?? this array shouldn't be here it should be in void loop
-int d[5]; // ?? what does this array stand for 
+int counter = 0;
+//char arr[5] = {'f', 'f', 'r', 'r', 'r'};
 void setup()
 {
   Wire.begin();
@@ -168,9 +167,6 @@ void rotate_180()
 
 void rotate_90(float yaw1, char dir)
 {
-  // brake();
-  //  delay(200);
-
   // start rotation in a certian direction
   if (dir == 'l')
   {
@@ -185,10 +181,7 @@ void rotate_90(float yaw1, char dir)
       ;
   }
   // spins until the following condition is false
-
   brake(); // end rotation
-
-  // delay(3000);
 }
 //==============right motor==============//
 void setRightMotor(bool dir, int motorSpeed)
@@ -331,7 +324,7 @@ int calcPID(int error, int previousError)
 }
 
 //==============set motor speed based on PID error==============//
-void setLeftRightSpeed(int PIDvalue, int error) // This virable int error is defined as globale above :)
+void setLeftRightSpeed(int PIDvalue, int error) 
 {
   int rightSpeed = rightInitSpeed + PIDvalue;
   int leftSpeed = leftInitSpeed - PIDvalue;
@@ -432,8 +425,6 @@ void second_t(char arr[],int Size,int LFSensor)
     }
     else if (arr[i] == 'f')
     {
-      // constrain(leftSpeed, 0, 255);
-      // constrain(rightSpeed, 0, 255);
       forward(100, 80);
       delay(200);
       i++;
@@ -458,7 +449,8 @@ void Delete(char arr[],int Size, int index){
         for(int i=index;i<Size ;i++){
             arr[i]=0;
             arr[i]= arr[i]+arr[i+1]- (arr[i+1]=arr[i]);
-        }}
+        }
+    }
 }
 
 void ProcessingPath(char path[],int Size){

@@ -60,15 +60,15 @@ float dt;
 float milliOld_mpu;
 float milliNew_mpu;
 float dt_mpu;
-int error = 0;
+int error = 0; // ?? Why there are so many global variables here while we can use them in functions only 
 float previousError = 0;
 float ErrorChange;
 float Slope;
 float Area = 0;
 int pid;
-int counter = 0;
-char arr[5] = {'f', 'f', 'r', 'r', 'r'};
-int d[5];
+int counter = 0;// ?? What is the usage of this counter
+//char arr[5] = {'f', 'f', 'r', 'r', 'r'}; // ?? this array shouldn't be here it should be in void loop
+int d[5]; // ?? what does this array stand for 
 void setup()
 {
   Wire.begin();
@@ -89,10 +89,11 @@ void setup()
 }
 
 void loop()
-{
+{ char path[40];
 
-  if (digitalRead(SWITCH)==LOW)
-    second_t(readSensor());
+  if (digitalRead(SWITCH)==LOW){
+    ProcessingPath(path,40);
+    second_t(path,40,readSensor());}
   else
     followLine();
 }
@@ -296,9 +297,6 @@ int returnError(int LFSensor)
     case 0b00010:
       err=-2;
       break;
-//    case 0b01100:
-//      err=1;
-//      break;
     case 0b00100:
       err=0;
       break;
@@ -315,92 +313,6 @@ int returnError(int LFSensor)
       err=6;
       break;
   }
-
-
-
-/*
-  //90deg right
-  if (((LFSensor[3] == 0) && (LFSensor[4] == 1) && (LFSensor[0] == 0) && (LFSensor[1] == 1) && (LFSensor[2] == 1)))
-  {
-    err = -14;
-  }
-  else if (((LFSensor[3] == 0) && (LFSensor[4] == 1) && (LFSensor[0] == 0) && (LFSensor[1] == 0) && (LFSensor[2] == 1)))
-  {
-    err = -14;
-  }
-
-  // 90deg left
-  else if (((LFSensor[3] == 1) && (LFSensor[4] == 0) && (LFSensor[0] == 1) && (LFSensor[1] == 1) && (LFSensor[2] == 0)))
-  {
-    err = 14;
-  }
-  else if (((LFSensor[3] == 1) && (LFSensor[4] == 0) && (LFSensor[0] == 1) && (LFSensor[1] == 0) && (LFSensor[2] == 0)))
-  {
-    err = 14;
-  }
-  /// middl e and LL
-  else if (((LFSensor[3] == 1) && (LFSensor[4] == 0) && (LFSensor[0] == 0) && (LFSensor[1] == 1) && (LFSensor[2] == 0)))
-  {
-    err = -1;
-  }
-  else if (((LFSensor[3] == 0) && (LFSensor[4] == 1) && (LFSensor[0] == 0) && (LFSensor[1] == 1) && (LFSensor[2] == 0)))
-  {
-    err = 1;
-  }
-
-  else if (((LFSensor[3] == 0) && (LFSensor[4] == 0) && (LFSensor[0] == 1) && (LFSensor[1] == 0) && (LFSensor[2] == 0)))
-  {
-    err = 2;
-  }
-  else if (((LFSensor[3] == 0) && (LFSensor[4] == 0) && (LFSensor[0] == 0) && (LFSensor[1] == 0) && (LFSensor[2] == 1)))
-  {
-    err = -2;
-  }
-
-  // Only LEFT sensor is on black
-
-  if ((LFSensor[0] == 1) && (LFSensor[1] == 0) && (LFSensor[2] == 0))
-  {
-    err = 1;
-  }
-
-  // Only RIGHT sensor is on black
-  else if ((LFSensor[0] == 0) && (LFSensor[1] == 0) && (LFSensor[2] == 1))
-  {
-    err = -1;
-  }
-
-  // Only MIDDLE sensor is on black
-  else if ((LFSensor[0] == 0) && (LFSensor[1] == 1) && (LFSensor[2] == 0))
-  {
-    err = 0;
-  }
-
-  // MIDDLE & LEFT sensor is on black
-  else if ((LFSensor[0] == 1) && (LFSensor[1] == 1) && (LFSensor[2] == 0))
-  {
-    err = 4;
-  }
-
-  // MIDDLE & RIGHT sensor is on black
-  else if ((LFSensor[0] == 0) && (LFSensor[1] == 1) && (LFSensor[2] == 1))
-  {
-    err = -4;
-  }
-
-  // 3 sensorS is on black
-  else if ((LFSensor[0] == 1) && (LFSensor[1] == 1) && (LFSensor[2] == 1))
-  {
-    err = 5;
-  }
-
-  // All sensord on White
-  else if ((LFSensor[0] == 0) && (LFSensor[1] == 0) && (LFSensor[2] == 0))
-  {
-    err = 6;
-  }
-  // Return error
-*/
   return err;
 
 }
@@ -419,7 +331,7 @@ int calcPID(int error, int previousError)
 }
 
 //==============set motor speed based on PID error==============//
-void setLeftRightSpeed(int PIDvalue, int error)
+void setLeftRightSpeed(int PIDvalue, int error) // This virable int error is defined as globale above :)
 {
   int rightSpeed = rightInitSpeed + PIDvalue;
   int leftSpeed = leftInitSpeed - PIDvalue;
@@ -499,24 +411,18 @@ void followLine()
   setLeftRightSpeed(PIDvalue, error);
 } // end followLine()
 
-void second_t(int LFSensor)
+void second_t(char arr[],int Size,int LFSensor)
 {
   int i = 0;
-  /*
-  if (
-      ((LFSensor[0] == 1) && (LFSensor[1] == 1) && (LFSensor[2] == 0)) ||
-      ((LFSensor[0] == 0) && (LFSensor[1] == 1) && (LFSensor[2] == 1)) ||
-      ((LFSensor[0] == 1) && (LFSensor[1] == 1) && (LFSensor[2] == 1))
-
-  )
-  */
-  if (LFSensor==0b01100 || 
-     LFSensor==0b00110 ||
-     LFSensor==0b01110)
+  while (i<Size){
+  if (LFSensor==0b01100 || LFSensor==0b11100 ||
+     LFSensor==0b00110 || LFSensor==0b00111 ||
+     LFSensor==0b01110 || LFSensor==0b11111 ||
+     LFSensor==0b11011 || LFSensor==0b01010 )
   {
     forward(100, 80);
     delay(200);
-    if (arr[i] = 'l')
+    if (arr[i] == 'l')
     {
       brake();
       forward(rightInitSpeed, leftInitSpeed);
@@ -524,7 +430,7 @@ void second_t(int LFSensor)
       rotate_90(readYaw(), 'l');
       i++;
     }
-    else if (arr[i] = 'f')
+    else if (arr[i] == 'f')
     {
       // constrain(leftSpeed, 0, 255);
       // constrain(rightSpeed, 0, 255);
@@ -532,7 +438,7 @@ void second_t(int LFSensor)
       delay(200);
       i++;
     }
-    else if (arr[i] = 'r')
+    else if (arr[i] == 'r')
     {
       brake();
       forward(100, 80);
@@ -544,5 +450,39 @@ void second_t(int LFSensor)
   else
   {
     followLine();
-  }
+  }}
 }
+
+void Delete(char arr[],int Size, int index){
+    for(int j=0;j<2;j++){
+        for(int i=index;i<Size ;i++){
+            arr[i]=0;
+            arr[i]= arr[i]+arr[i+1]- (arr[i+1]=arr[i]);
+        }}
+}
+
+void ProcessingPath(char path[],int Size){
+bool any_end = true;
+int Bcount = 0;
+while (any_end){
+    for(int i=0; i<=Size;i++){
+        if(path[i]=='b'){
+            if (path[i-1]=='l'&&path[i+1]=='r'||path[i-1]=='r'&&path[i+1]=='l'||path[i-1]=='f'&&path[i+1]=='f'){
+                path[i-1]='b';
+                Delete(path,Size,i);   }
+            else if (path[i-1]=='f'&&path[i+1]=='r'||path[i-1]=='r'&&path[i+1]=='f'){
+                path[i-1]='l';
+                Delete(path,Size,i);   }
+            else if (path[i-1]=='f'&&path[i+1]=='l'||path[i-1]=='l'&&path[i+1]=='f'){
+                path[i-1]='r';
+                Delete(path,Size,i);   }
+            else if (path[i-1]=='l'&&path[i+1]=='l'||path[i-1]=='r'&&path[i+1]=='r'){
+                path[i-1]='f';
+                Delete(path,Size,i);   }}}
+
+    for(int i=0; i<=Size;i++){
+        if(path[i]=='b'){
+            Bcount++;   }    }
+    if (Bcount==0){any_end=false;}
+    else{Bcount=0;}
+}}

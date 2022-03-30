@@ -93,8 +93,9 @@ void loop()
   if (digitalRead(SWITCH)==LOW){
     ProcessingPath(path,40);
     second_t(path,40,readSensor());}
-  else
-    followLine();
+  else{
+    first_t(path[])
+    followLine();}
 }
 
 //==============read sensor==============//
@@ -478,3 +479,29 @@ while (any_end){
     if (Bcount==0){any_end=false;}
     else{Bcount=0;}
 }}
+void first_t(char arr[])
+{
+
+  int i = 0;
+  if (
+     LFSensor==0b00110 || LFSensor==0b00111 ||
+     LFSensor==0b01110 || LFSensor==0b11111 ||
+     LFSensor==0b11011 || LFSensor==0b01010 )
+  {
+      brake();
+      forward(100, 80);
+      delay(300);
+      rotate_90(readYaw(), 'r');
+      arr[i]='r'; 
+      i++;
+    }
+  else if (LFSensor==0b11100 ||LFSensor==0b01100 )
+  {
+    brake();
+    forward(100, 80);
+    delay(300);
+    rotate_90(readYaw(), 'f');
+    arr[i]='f'; 
+    i++;
+	
+  }}
